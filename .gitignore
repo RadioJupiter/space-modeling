@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+.ipynb_checkpoints/
+.DS_Store
+# Keep dated snapshots; ignore accidental local scratch
+*.png.bak
+data/stations.tle

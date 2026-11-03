@@ -1,0 +1,5 @@
+requests>=2.31
+pandas>=2.0
+matplotlib>=3.8
+skyfield>=1.49
+numpy>=1.26
