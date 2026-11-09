@@ -3,3 +3,4 @@ pandas>=2.0
 matplotlib>=3.8
 skyfield>=1.49
 numpy>=1.26
+pytest>=8
