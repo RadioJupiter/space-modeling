@@ -17,6 +17,7 @@ pip install -r requirements.txt
 | `launch_cadence.py` | Counts launches per quarter for the top rocket families; writes `cadence.png` | [Launch Library 2](https://thespacedevs.com/llapi) (free, ~15 calls/hour) |
 | `launch_slip.py` | Snapshots upcoming launches to `data/upcoming_YYYY-MM-DD.csv`; `--diff A B` compares two snapshots and reports slip days | Launch Library 2 |
 | `slip_history.py` | Summarizes slip across every consecutive pair of snapshots; writes `data/slip_summary.csv` and `slip_summary.png` | Local snapshots |
+| `slip_by_provider.py` | Aggregates slip per rocket (parsed from launch name, since LL2 list mode omits provider); writes `data/slip_by_provider.csv` | Local snapshots |
 | `iss_passes.py` | ISS rise / peak / set over Spring, TX for the next 48 hours (America/Chicago) | [CelesTrak](https://celestrak.org) TLEs via Skyfield |
 | `kepler_check.py` | Fits `log(a / M^(1/3))` vs `log(P)` for confirmed exoplanets; Kepler predicts slope ≈ 2/3 | [NASA Exoplanet Archive TAP](https://exoplanetarchive.ipac.caltech.edu) |
 
@@ -27,7 +28,8 @@ python src/launch_cadence.py      # a few LL2 pages; stay under the free rate li
 python src/launch_slip.py         # writes today's CSV under data/
 python src/launch_slip.py --diff data/upcoming_2026-11-02.csv data/upcoming_2026-11-09.csv
 python src/slip_history.py        # slip summary table + chart across all snapshots
-python -m pytest tests            # unit test for the slip statistics
+python -m pytest tests            # unit tests for the slip statistics
+python src/slip_by_provider.py    # per-rocket slip table
 python src/iss_passes.py
 python src/kepler_check.py
 ```
