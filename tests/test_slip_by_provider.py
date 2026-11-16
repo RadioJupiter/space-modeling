@@ -6,10 +6,11 @@ from slip_by_provider import provider_slip
 
 
 def test_provider_slip():
-    a = pd.DataFrame({"id": ["x", "y", "z"], "net": ["2026-11-01T00:00:00Z"] * 3})
+    # Use timed (non-midnight) NETs so the comparisons count.
+    a = pd.DataFrame({"id": ["x", "y", "z"], "net": ["2026-11-01T12:00:00Z"] * 3})
     b = pd.DataFrame({
         "id": ["x", "y", "z"],
-        "net": ["2026-11-03T00:00:00Z", "2026-11-01T00:00:00Z", "2026-11-09T00:00:00Z"],
+        "net": ["2026-11-03T12:00:00Z", "2026-11-01T12:00:00Z", "2026-11-09T12:00:00Z"],
         "status": ["Go", "Go", "Success"],  # z already flew -> excluded
         "name": ["A | p1", "A | p2", "B | p3"],
     })

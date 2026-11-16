@@ -1,18 +1,7 @@
 provider,observations,slipped,share_slipped,mean_slip_days,max_slip_days
-Mir,2,2,1.0,12.896,18.792
-Vulcan VC6L,1,1,1.0,0.746,0.746
-Falcon 9 Block 5,38,2,0.053,0.182,5.942
-Electron,9,1,0.111,0.025,0.229
-Spectrum,6,0,0.0,0.0,0.0
-LVM-3,4,0,0.0,0.0,0.0
-Ariane 62,2,0,0.0,0.0,0.0
-Ariane 64 Block 2,2,0,0.0,0.0,0.0
-Firefly Alpha Block 2,2,0,0.0,0.0,0.0
-Long March 12,2,0,0.0,0.0,0.0
-Long March 2F/G,2,0,0.0,0.0,0.0
-Long March 8A,2,0,0.0,0.0,0.0
-PSLV-XL,2,0,0.0,0.0,0.0
-Soyuz 2.1b,2,0,0.0,0.0,0.0
-Themis Demonstrator,2,0,0.0,0.0,0.0
-Vulcan VC4L,1,0,0.0,0.0,0.0
-Starship,1,0,0.0,-16.052,-16.052
+Mir,1,1,1.000,7.000,7.000
+Falcon 9 Block 5,4,2,0.500,1.734,5.942
+Long March 12,2,0,0.000,0.000,0.000
+Long March 8A,2,0,0.000,0.000,0.000
+Soyuz 2.1b,2,0,0.000,0.000,0.000
+Spectrum,2,0,0.000,0.000,0.000

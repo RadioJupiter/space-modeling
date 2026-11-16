@@ -2,9 +2,13 @@
 """Summarize launch slip across every consecutive pair of data/upcoming_*.csv snapshots.
 
 Writes data/slip_summary.csv (one row per snapshot pair: matched launches,
-launches slipped, mean/median/max slip in days) and slip_summary.png.
-Only launches whose NET is still in the future at the later snapshot's start
-are meaningful; launches that already flew are excluded via status.
+timed comparisons, launches slipped, mean/median/max slip in days) and
+slip_summary.png.
+
+Only launches still upcoming at the later snapshot are included. A comparison
+counts in the slip statistics only when both NETs are timed to the hour or
+better; a slip is a later move of at least 1 hour. Placeholder dates are
+excluded (see precision.py).
 """
 from __future__ import annotations
 
@@ -15,23 +19,42 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 
+from launch_slip import FLAG_OK, MIN_SLIP_DAYS, compare_frames_all
+
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
-DONE = {"Success", "Failure", "Partial Failure"}
+
+FILTER_NOTE = (
+    "Timed NETs only (hour precision or better); slip = move later ≥ 1 h. "
+    "Placeholder dates excluded. Data: Launch Library 2 (The Space Devs)."
+)
 
 
-def pair_stats(a: pd.DataFrame, b: pd.DataFrame) -> dict:
-    a = a.assign(net=pd.to_datetime(a["net"], utc=True))
-    b = b.assign(net=pd.to_datetime(b["net"], utc=True))
-    m = a[["id", "net"]].merge(b[["id", "net", "status"]], on="id", suffixes=("_a", "_b"))
-    m = m[~m["status"].isin(DONE)]
-    slip = (m["net_b"] - m["net_a"]).dt.total_seconds() / 86400.0
+def pair_stats(
+    a: pd.DataFrame,
+    b: pd.DataFrame,
+    *,
+    include_low_precision: bool = False,
+    min_slip_days: float = MIN_SLIP_DAYS,
+) -> dict:
+    """Return slip statistics for one snapshot pair.
+
+    ``matched`` is every still-upcoming launch present in both snapshots.
+    Mean / median / max and ``slipped`` are computed on timed comparisons
+    only (unless ``include_low_precision``).
+    """
+    all_rows = compare_frames_all(a, b)
+    timed = all_rows[all_rows["precision_flag"] == FLAG_OK]
+    used = all_rows if include_low_precision else timed
+    slip = used["slip_days"] if len(used) else pd.Series(dtype=float)
     return {
-        "matched": len(m),
-        "slipped": int((slip > 0.01).sum()),
-        "mean_slip_days": round(float(slip.mean()), 3) if len(m) else 0.0,
-        "median_slip_days": round(float(slip.median()), 3) if len(m) else 0.0,
-        "max_slip_days": round(float(slip.max()), 3) if len(m) else 0.0,
+        "matched": int(len(all_rows)),
+        "timed": int(len(timed)),
+        "excluded": int(len(all_rows) - len(timed)),
+        "slipped": int((slip >= min_slip_days).sum()) if len(used) else 0,
+        "mean_slip_days": round(float(slip.mean()), 3) if len(used) else 0.0,
+        "median_slip_days": round(float(slip.median()), 3) if len(used) else 0.0,
+        "max_slip_days": round(float(slip.max()), 3) if len(used) else 0.0,
     }
 
 
@@ -45,16 +68,17 @@ def main() -> int:
         s = pair_stats(pd.read_csv(fa), pd.read_csv(fb))
         rows.append({"from": fa.stem[9:], "to": fb.stem[9:], **s})
     df = pd.DataFrame(rows)
-    df.to_csv(DATA / "slip_summary.csv", index=False)
+    df.to_csv(DATA / "slip_summary.csv", index=False, float_format="%.3f")
     print(df.to_string(index=False))
-    fig, ax = plt.subplots(figsize=(8, 4))
+    fig, ax = plt.subplots(figsize=(8, 4.4))
     ax.bar(df["to"], df["mean_slip_days"], label="mean")
     ax.plot(df["to"], df["max_slip_days"], "o-", color="C3", label="max")
     ax.set_ylabel("NET slip (days)")
     ax.set_title("Upcoming-launch slip between weekly snapshots")
     ax.legend()
     fig.autofmt_xdate()
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0.10, 1, 1))
+    fig.text(0.5, 0.015, FILTER_NOTE, ha="center", va="bottom", fontsize=8, color="0.35")
     fig.savefig(ROOT / "slip_summary.png", dpi=120)
     return 0
 
