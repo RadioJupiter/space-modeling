@@ -55,6 +55,31 @@ def provider_slip(
     return out.sort_values(["mean_slip_days", "observations"], ascending=False).reset_index()
 
 
+def plot_provider_slip(df: pd.DataFrame, path: Path, min_obs: int = 2) -> bool:
+    """Bar chart of mean slip (days) per rocket with >= min_obs timed observations.
+
+    Returns False (and writes nothing) if no rocket qualifies.
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    d = df[df["observations"] >= min_obs].sort_values("mean_slip_days")
+    if d.empty:
+        return False
+    fig, ax = plt.subplots(figsize=(8, 0.45 * len(d) + 1.5))
+    ax.barh(d["provider"], d["mean_slip_days"], color="#4c78a8")
+    for y, (m, n) in enumerate(zip(d["mean_slip_days"], d["observations"])):
+        ax.text(m, y, f" n={n}", va="center", fontsize=8)
+    ax.set_xlabel("Mean NET slip (days, timed comparisons)")
+    ax.set_title(f"Mean slip per rocket (>= {min_obs} observations)")
+    fig.text(0.01, 0.01, "Data: Launch Library 2 (The Space Devs)", fontsize=7)
+    fig.tight_layout(rect=(0, 0.03, 1, 1))
+    fig.savefig(path, dpi=130)
+    plt.close(fig)
+    return True
+
+
 def main() -> int:
     files = sorted(DATA.glob("upcoming_*.csv"))
     if len(files) < 2:
@@ -64,6 +89,11 @@ def main() -> int:
     df.to_csv(DATA / "slip_by_provider.csv", index=False, float_format="%.3f")
     print(f"{len(files)} snapshots, {len(files) - 1} pairs")
     print(df.to_string(index=False))
+    try:
+        if plot_provider_slip(df, ROOT / "slip_by_provider.png"):
+            print("Wrote slip_by_provider.png")
+    except ImportError:
+        print("matplotlib not installed; skipping chart")
     return 0
 
 

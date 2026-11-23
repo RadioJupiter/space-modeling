@@ -1,7 +1,7 @@
 provider,observations,slipped,share_slipped,mean_slip_days,max_slip_days
 Mir,1,1,1.000,7.000,7.000
-Falcon 9 Block 5,4,2,0.500,1.734,5.942
-Long March 12,2,0,0.000,0.000,0.000
+Long March 12,3,1,0.333,5.333,16.000
+Falcon 9 Block 5,6,3,0.500,1.322,5.942
+Soyuz 2.1b,3,1,0.333,0.072,0.215
 Long March 8A,2,0,0.000,0.000,0.000
-Soyuz 2.1b,2,0,0.000,0.000,0.000
 Spectrum,2,0,0.000,0.000,0.000

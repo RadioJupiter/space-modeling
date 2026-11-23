@@ -208,7 +208,7 @@ def test_min_hours_threshold() -> None:
 def test_committed_snapshots_match_published_figures() -> None:
     """Lock the README / CSV headline numbers to the committed weekly snapshots."""
     data = Path(__file__).resolve().parents[1] / "data"
-    files = sorted(data.glob("upcoming_*.csv"))
+    files = sorted(data.glob("upcoming_*.csv"))[:3]  # first three; later snapshots grow the dataset
     assert [f.name for f in files] == [
         "upcoming_2026-11-02.csv",
         "upcoming_2026-11-09.csv",
